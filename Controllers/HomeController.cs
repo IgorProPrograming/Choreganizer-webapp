@@ -1,21 +1,23 @@
 using Choreganizer_webapp.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.Data.Sql;
+using Microsoft.Data.SqlClient;
 
 namespace Choreganizer_webapp.Controllers
 {
-	public class HomeController : Controller
+	public class HomeController(IConfiguration configuration, ILogger<HomeController> logger) : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
-
-		public HomeController(ILogger<HomeController> logger)
-		{
-			_logger = logger;
-		}
+		private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection");
 
 		public IActionResult Index()
 		{
-			return View();
+
+			SqlConnection s = new SqlConnection(_connectionString);
+			s.Open();
+
+            return View();
 		}
 
 		public IActionResult Privacy()
