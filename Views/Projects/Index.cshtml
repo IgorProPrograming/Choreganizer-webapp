@@ -1,0 +1,48 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div>
+    <div></div>
+    <table>
+        <tr>
+            <th>
+                Project
+            </th>
+            <th>
+                Owner
+            </th>
+            <th>
+                Last Edit
+            </th>
+        </tr>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <th>
+                    @m.ProjectName
+                </th>
+                <th>
+                    Igor
+                </th>
+                <th>
+                <!--    m.LastEditDate -->
+                </th>
+                <th>
+
+                    <form method="post" asp-action="Edit" asp-controller="Projects">
+                        <input type="hidden" name="Id" value="@m.Id" />
+                        <input type="submit" value="Edit" />
+                    </form>
+                </th>
+            </tr>
+        }
+    </table>
+
+    <form method="post" asp-action="Add" asp-controller="Projects">
+        <input type="text" name="Project" />
+        <input type="submit" value="New Project" />
+    </form>
+</div>

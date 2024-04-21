@@ -7,34 +7,35 @@ using System.Net.WebSockets;
 
 namespace Choreganizer_webapp.Controllers
 {
-    public class ChoreTableController(IConfiguration configuration) : Controller
+    public class ProjectsController(IConfiguration configuration) : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection");
 
         public IActionResult Index()
-        { 
-            List<Chores> choresList = new List<Chores>();
+        {
+            //get projects from database
+            List<Projects> projectsList = new List<Projects>();
 
             using (SqlConnection s = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Chores", s);
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Projects", s);
                 cmd.CommandType = System.Data.CommandType.Text;
                 s.Open();
                 using (SqlDataReader rdr = cmd.ExecuteReader())
                 {
                     while (rdr.Read())
                     {
-                        var chore = new Chores();
-                        chore.Id = (int)rdr["Id"];
-                        chore.Chore = (string)rdr["Chore"];
-                       // chore.Date = (DateTime)rdr["DateTime"];
-                        chore.Finished = (byte)rdr["Completed"];
-                        choresList.Add(chore);
+                        var project = new Projects();
+                        project.Id = (int)rdr["Id"];
+                        project.ProjectName = (string)rdr["ProjectName"];
+                        //project.CreationDate = (DateTime)rdr["CreationDate"];
+                        //project.LastEditDate = (DateTime)rdr["LastEditDate"];
+                        projectsList.Add(project);
                     }
                 }
             }
-            return View(choresList);
+            return View(projectsList);
         }
 
         [HttpPost]
