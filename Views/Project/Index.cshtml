@@ -1,0 +1,56 @@
+﻿@model List<Project>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div>
+    <div></div>
+    <table>
+        <tr>
+            <th>
+                Project
+            </th>
+            <th>
+                Owner
+            </th>
+            <th>
+                Last Edit
+            </th>
+        </tr>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <th>
+                    @Html.ActionLink( @m.ProjectName, "OpenProject", new { ProjectId = @m.Id } )
+                   <!--
+                    <form method="post" asp-action="SelectedProject" asp-controller="Project" >
+                        <input type="hidden" name="Id" value="@m.Id" />
+                        <input type="submit" value="@m.ProjectName" />
+                        </form>
+                        -->
+                    
+                </th>
+                <th>
+                    Igor
+                </th>
+                <th>
+                <!--    m.LastEditDate -->
+                </th>
+                <th>
+
+                    <form method="post" asp-action="Remove" asp-controller="Project">
+                        <input type="hidden" name="projectId" value="@m.Id" />
+                        <input type="submit" value="Remove" />
+                    </form>
+                </th>
+            </tr>
+        }
+    </table>
+
+    <form method="post" asp-action="Add" asp-controller="Project">
+        <input type="text" name="projectName" />
+        <input type="submit" value="New Project" />
+    </form>
+</div>

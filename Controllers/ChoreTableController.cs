@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Choreganizer_webapp.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Data.Sql;
 using Microsoft.Data.SqlClient;
 using Microsoft.Identity.Client;
 using System.Net.WebSockets;
+using DAL;
 
 namespace Choreganizer_webapp.Controllers
 {
@@ -12,55 +14,35 @@ namespace Choreganizer_webapp.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection");
 
-        public IActionResult Index()
-        { 
-            List<Chores> choresList = new List<Chores>();
+        public int ProjectId;
 
-            using (SqlConnection s = new SqlConnection(_connectionString))
+        public IActionResult Index(int projectId)
+        { 
+            ProjectId = projectId;
+            List<Chore> choreList = new List<Chore>();
+            List<ChoreDTO> choresFromDB = new ChoreRepository().GetChores(projectId);
+
+            foreach (var chore in choresFromDB)
             {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Chores", s);
-                cmd.CommandType = System.Data.CommandType.Text;
-                s.Open();
-                using (SqlDataReader rdr = cmd.ExecuteReader())
-                {
-                    while (rdr.Read())
-                    {
-                        var chore = new Chores();
-                        chore.Id = (int)rdr["Id"];
-                        chore.Chore = (string)rdr["Chore"];
-                       // chore.Date = (DateTime)rdr["DateTime"];
-                        chore.Finished = (byte)rdr["Completed"];
-                        choresList.Add(chore);
-                    }
-                }
+                Chore c = new Chore();
+                c.ChoreName = chore.ChoreName;
+                c.Id = chore.Id;
+                choreList.Add(c);
             }
-            return View(choresList);
+            
+            return View(choreList);
         }
 
-        [HttpPost]
         public ActionResult Remove(int Id)
         {
-            using (SqlConnection s = new SqlConnection(_connectionString))
-            {
-                s.Open();
-                SqlCommand cmd = new SqlCommand("DELETE FROM [dbo].[Chores] WHERE Id = @Id", s);
-                cmd.Parameters.AddWithValue("@Id", Id.ToString());
-                cmd.ExecuteNonQuery();
-            }
-            return RedirectToAction("Index");
+            new ChoreRepository().RemoveChore(Id);
+            return RedirectToAction("Index", "ChoreTable", new { projectId = ProjectId });
         }
 
         public ActionResult Add(string Chore)
         {
-            using (SqlConnection s = new SqlConnection(_connectionString))
-            {
-                s.Open();
-                SqlCommand cmd = new SqlCommand("INSERT INTO [dbo].[Chores] ([Chore], [DateTime], [Completed]) VALUES (@Chore, @DateTime, 0)\r\n", s);
-                cmd.Parameters.AddWithValue("@Chore", Chore);
-                cmd.Parameters.AddWithValue("@DateTime", DateTime.Now);
-                cmd.ExecuteNonQuery();
-            }
-            return RedirectToAction("Index");
+            new ChoreRepository().AddChore(Chore, ProjectId);
+            return RedirectToAction("Index", new { projectId = ProjectId });
         }
     }
 }
