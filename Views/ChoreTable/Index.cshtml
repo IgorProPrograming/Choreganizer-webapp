@@ -1,9 +1,11 @@
-﻿@model List<Chore>
+﻿@using LOGIC;
+@model List<LOGIC.Chore>
 @*
 
 *@
 @{
 }
+@ViewBag.Id
 
 <div>
     <div></div>
@@ -26,7 +28,7 @@
                 <th>
 
                     <form method="post" asp-action="Remove" asp-controller="ChoreTable">
-						<input type="hidden" name="Id" value="@m.Id" />
+						<input type="hidden" name="choreId" value="@m.Id" />
 						<input type="submit" value="Remove" />
                     </form>
 
@@ -37,7 +39,7 @@
     </table>
 
     <form method="post" asp-action="Add" asp-controller="ChoreTable">
-		<input type="text" name="Chore" />
+		<input type="text" name="choreName" />
 		<input type="submit" value="Add Chore" />
     </form>
 </div>

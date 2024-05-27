@@ -5,44 +5,33 @@ using Microsoft.Data.Sql;
 using Microsoft.Data.SqlClient;
 using Microsoft.Identity.Client;
 using System.Net.WebSockets;
-using DAL;
+using LOGIC;
 
 namespace Choreganizer_webapp.Controllers
 {
     public class ChoreTableController(IConfiguration configuration) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection");
 
-        public int ProjectId;
-
-        public IActionResult Index(int projectId)
+        public IActionResult Index()
         { 
-            ProjectId = projectId;
-            List<Chore> choreList = new List<Chore>();
-            List<ChoreDTO> choresFromDB = new ChoreRepository().GetChores(projectId);
+            int projectId = int.Parse(HttpContext.Session.GetString("CurrentProjectId"));
 
-            foreach (var chore in choresFromDB)
-            {
-                Chore c = new Chore();
-                c.ChoreName = chore.ChoreName;
-                c.Id = chore.Id;
-                choreList.Add(c);
-            }
+            List<Chore> choreList = new ChoreService().GetChores(projectId);
             
             return View(choreList);
         }
 
-        public ActionResult Remove(int Id)
+        public ActionResult Remove(int choreId)
         {
-            new ChoreRepository().RemoveChore(Id);
-            return RedirectToAction("Index", "ChoreTable", new { projectId = ProjectId });
+            new ChoreService().RemoveChore(choreId);
+            return RedirectToAction("Index", "ChoreTable");
         }
 
-        public ActionResult Add(string Chore)
+        public ActionResult Add(string choreName)
         {
-            new ChoreRepository().AddChore(Chore, ProjectId);
-            return RedirectToAction("Index", new { projectId = ProjectId });
+            int projectId = int.Parse(HttpContext.Session.GetString("CurrentProjectId"));
+            new ChoreService().AddChore(choreName, projectId);
+            return RedirectToAction("Index");
         }
     }
 }

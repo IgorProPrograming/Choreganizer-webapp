@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using LOGIC;
+using MySqlX.XDevAPI;
+
 
 
 namespace Choreganizer_webapp.Controllers
@@ -14,24 +17,36 @@ namespace Choreganizer_webapp.Controllers
             return View();
         }
 
+        public IActionResult RedirectToRegisterPage()
+        {
+            return RedirectToAction("Index", "RegisterPage");
+        }
+
         [HttpPost]
         public ActionResult Login(string Username, string Password)
         {
-            using (SqlConnection s = new SqlConnection(_connectionString))
+            UserProfile profile = new UserProfile();
+            profile.Username = Username;
+            profile.Password = Password;
+
+            string result = new LoginService().login(profile);
+            if (result == "User not found")
             {
-                s.Open();
-                SqlCommand cmd = new SqlCommand("SELECT * FROM [dbo].[UserProfile] WHERE UserName = @Name AND Password = @Password", s);
-                cmd.Parameters.AddWithValue("@Name", Username);
-                cmd.Parameters.AddWithValue("@Password", Password);
-                using (SqlDataReader rdr = cmd.ExecuteReader())
-                {
-                    if (rdr.Read())
-                    {
-                        return RedirectToAction("Index", "Project", new { Id = (int)rdr["Id"] });
-                    }
-                }
+                ViewBag.Message = "User not found";
+                return View("Index");
             }
-            return RedirectToAction("Index");
+            else if (result == "Incorrect password")
+            {
+                ViewBag.Message = "Incorrect password";
+                return View("Index");
+            }
+            else
+            {
+
+                HttpContext.Session.SetString("UserId", result);
+                ViewBag.Message = "Login successful";
+                return RedirectToAction("Index", "Project");
+            }
         }
     }
 }

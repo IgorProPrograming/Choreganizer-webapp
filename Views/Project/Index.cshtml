@@ -1,4 +1,5 @@
-﻿@model List<Project>
+﻿@using LOGIC;
+@model List<LOGIC.Project>
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -23,28 +24,20 @@
         {
             <tr>
                 <th>
-                    @Html.ActionLink( @m.ProjectName, "OpenProject", new { ProjectId = @m.Id } )
-                   <!--
-                    <form method="post" asp-action="SelectedProject" asp-controller="Project" >
-                        <input type="hidden" name="Id" value="@m.Id" />
-                        <input type="submit" value="@m.ProjectName" />
-                        </form>
-                        -->
-                    
+                    @Html.ActionLink( @m.ProjectName, "OpenProject", new { projectId = @m.Id } )  
                 </th>
                 <th>
-                    Igor
+                    functionaliteit toevoegen
                 </th>
                 <th>
                 <!--    m.LastEditDate -->
                 </th>
                 <th>
-
-                    <form method="post" asp-action="Remove" asp-controller="Project">
-                        <input type="hidden" name="projectId" value="@m.Id" />
-                        <input type="submit" value="Remove" />
-                    </form>
+                    @Html.ActionLink("Delete", "Remove", new { projectId = @m.Id })
                 </th>
+                <th>
+                    @Html.ActionLink("Add new user to project", "AddUser", new { projectId = @m.Id })
+			    </th>
             </tr>
         }
     </table>

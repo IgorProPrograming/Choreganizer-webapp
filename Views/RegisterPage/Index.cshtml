@@ -1,0 +1,17 @@
+﻿@{
+}
+
+<h1>
+@ViewData["errorMessage"]
+</h1>
+<br />
+
+<form method="post" asp-action="Register" asp-controller="RegisterPage">
+    <input type="text" name="username" placeholder="Username" />
+    <br />
+    <input type="password" name="password" placeholder="Password" />
+    <br />
+    <input type="password" name="passwordConfirmation" placeholder="Confirm Password" />
+    <br />
+    <input type="submit" value="Register" />
+</form>

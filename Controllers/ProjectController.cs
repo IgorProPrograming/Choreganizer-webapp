@@ -1,5 +1,5 @@
 ﻿using Choreganizer_webapp.Models;
-using DAL;
+using LOGIC;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Data.Sql;
@@ -11,43 +11,38 @@ namespace Choreganizer_webapp.Controllers
 {
     public class ProjectController(IConfiguration configuration) : Controller
     {
-        //private readonly ILogger<HomeController> _logger;
-       // private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection");
-
-        public IActionResult Index(int Id)
+        public IActionResult Index()
         {
-            Id = 1;
-            List<Project> projectsList = new List<Project>();
-
-            List<ProjectDTO> projectjesUitDeDatabase = new ProjectRepository().GetProjects(Id);
-
-            foreach (var project in projectjesUitDeDatabase)
+            if (HttpContext.Session.GetString("UserId") == null)
             {
-                Project p = new Project();
-               // p.CreationDate = project.CreationDate;
-                p.ProjectName = project.ProjectName;
-                p.Id = project.Id;
-                projectsList.Add(p);
+                return RedirectToAction("Index", "LoginPage");
+            } else 
+            {                 
+                int ownerId = int.Parse(HttpContext.Session.GetString("UserId"));
+                List<LOGIC.Project> projectsList = new List<LOGIC.Project>();
+            
+                projectsList = new ProjectService().GetProjects(ownerId);
+                return View(projectsList);
             }
-
-            return View(projectsList);
         }
 
-        public IActionResult OpenProject(int ProjectId) 
+        public IActionResult OpenProject(int projectId) 
         {
-            return RedirectToAction("Index", "ChoreTable", new { projectId = ProjectId });
+            HttpContext.Session.SetString("CurrentProjectId", projectId.ToString());
+            string test = HttpContext.Session.GetString("CurrentProjectId");
+            return RedirectToAction("Index", "ChoreTable");
         }
 
-        [HttpPost]
-        public ActionResult Remove(int projectId)
+        public IActionResult Remove(int projectId)
         {
-            new ProjectRepository().RemoveProject(projectId);
+            new ProjectService().RemoveProject(projectId);
             return RedirectToAction("Index");
         }
 
         public ActionResult Add(string projectName)
         {
-            new ProjectRepository().AddProject(projectName);
+            int userId = int.Parse(HttpContext.Session.GetString("UserId"));
+            new ProjectService().AddProject(projectName, userId);
             return RedirectToAction("Index");
         }
     }
