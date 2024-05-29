@@ -1,4 +1,5 @@
-﻿@using LOGIC;
+﻿@using Choreganizer_webapp.Controllers
+@using LOGIC;
 @model List<LOGIC.Chore>
 @*
 
@@ -26,13 +27,19 @@
                     @m.Id
                 </th>
                 <th>
-
-                    <form method="post" asp-action="Remove" asp-controller="ChoreTable">
-						<input type="hidden" name="choreId" value="@m.Id" />
-						<input type="submit" value="Remove" />
-                    </form>
-
-
+                    @if (m.Finished)
+                    {
+                        <div class="Checked">
+                        @Html.ActionLink("Checked", "ToggleState", new { choreId = @m.Id, lastState = m.Finished })
+                        </div>
+                    } else 
+                    {
+                        <div class="UnChecked">
+                        @Html.ActionLink("Unchecked", "ToggleState", new { choreId = @m.Id, lastState = m.Finished })
+                        </div>
+                    }
+                    @Html.ActionLink("Delete", "Remove", new { choreId = @m.Id })
+                    @Html.ActionLink("Edit", "Edit", new { choreId = @m.Id })
                 </th>
             </tr>
         }

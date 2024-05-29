@@ -9,7 +9,7 @@ using System.Net.WebSockets;
 
 namespace Choreganizer_webapp.Controllers
 {
-    public class ProjectController(IConfiguration configuration) : Controller
+    public class ProjectController(IConfiguration configuration, IProjectRepository projectRepository) : Controller
     {
         public IActionResult Index()
         {
@@ -21,7 +21,7 @@ namespace Choreganizer_webapp.Controllers
                 int ownerId = int.Parse(HttpContext.Session.GetString("UserId"));
                 List<LOGIC.Project> projectsList = new List<LOGIC.Project>();
             
-                projectsList = new ProjectService().GetProjects(ownerId);
+                projectsList = new ProjectService(projectRepository).GetProjects(ownerId);
                 return View(projectsList);
             }
         }

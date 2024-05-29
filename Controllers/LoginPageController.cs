@@ -9,8 +9,6 @@ namespace Choreganizer_webapp.Controllers
 {
     public class LoginPageController(IConfiguration configuration) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection");
 
         public IActionResult Index()
         {

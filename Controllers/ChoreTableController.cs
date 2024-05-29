@@ -33,5 +33,36 @@ namespace Choreganizer_webapp.Controllers
             new ChoreService().AddChore(choreName, projectId);
             return RedirectToAction("Index");
         }
+
+        public ActionResult ToggleState(int choreId, bool lastState)
+        {
+            new ChoreService().ToggleChoreStatus(choreId, lastState);
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult Edit(int choreId)
+        {
+            Chore chore = new ChoreService().GetChore(choreId);
+            return View(chore);
+        }
+
+
+        public ActionResult BackToList()
+        {
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult Edit(int choreId, string choreName, string choreDescription, DateTime deadlineDate)
+        {
+            Chore chore = new Chore();
+            chore.Id = choreId;
+            chore.ChoreName = choreName;
+            chore.Deadline = deadlineDate;
+            
+            new ChoreService().UpdateChore(chore);
+            return RedirectToAction("Index");
+        }
+
     }
 }

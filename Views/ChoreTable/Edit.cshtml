@@ -1,0 +1,27 @@
+﻿
+@model LOGIC.Chore
+
+@{
+    ViewBag.Title = "Edit Chore";
+}
+
+<h2>Edit Chore</h2>
+
+<form method="post" asp-action="Add" asp-controller="ChoreTable">
+    Name: 
+    <input type="text" name="choreName" />
+    <br/>
+    Description: 
+    <input type="text" name="choreDescription" />
+    <br />
+    Deadline date: 
+    <input type="datetime" name="deadlineDate" />
+    <br />
+    <input type="hidden" name="choreId" value="@Model.Id" />
+    <input type="submit" value="Add Chore" />
+</form>
+
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
