@@ -11,6 +11,7 @@ namespace Choreganizer_webapp.Controllers
 {
     public class ProjectController(IConfiguration configuration, IProjectRepository projectRepository) : Controller
     {
+        
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UserId") == null)

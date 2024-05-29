@@ -1,3 +1,4 @@
+using System.Configuration;
 using System.Net.NetworkInformation;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +8,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 
 var app = builder.Build();
-
 
 
 // Configure the HTTP request pipeline.
@@ -32,5 +32,7 @@ app.UseSession();
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
 
 app.Run();
