@@ -1,3 +1,5 @@
+using DAL;
+using LOGIC;
 using System.Configuration;
 using System.Net.NetworkInformation;
 
@@ -6,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IChoreRepository, ChoreRepository>();
+builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 
 var app = builder.Build();
 
@@ -36,3 +41,4 @@ app.MapControllerRoute(
 
 
 app.Run();
+

@@ -1,48 +1,51 @@
-﻿using Choreganizer_webapp.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Data.Sql;
-using Microsoft.Data.SqlClient;
-using Microsoft.Identity.Client;
-using System.Net.WebSockets;
+﻿using Microsoft.AspNetCore.Mvc;
 using LOGIC;
 
 namespace Choreganizer_webapp.Controllers
 {
-    public class ChoreTableController(IConfiguration configuration) : Controller
+    public class ChoreTableController : Controller
     {
+        private readonly string _connectionString;
+        private readonly IChoreRepository _choreRepository;
+        private readonly ChoreService _choreService;
+
+        public ChoreTableController(IConfiguration configuration, IChoreRepository choreRepository)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _choreRepository = choreRepository;
+            _choreService = new ChoreService(_choreRepository, _connectionString);
+        }
 
         public IActionResult Index()
-        { 
+        {
             int projectId = int.Parse(HttpContext.Session.GetString("CurrentProjectId"));
+            List<Chore> choreList = _choreRepository.GetChores(projectId, _connectionString);
 
-            List<Chore> choreList = new ChoreService().GetChores(projectId);
-            
             return View(choreList);
         }
 
         public ActionResult Remove(int choreId)
         {
-            new ChoreService().RemoveChore(choreId);
+            _choreService.RemoveChore(choreId, _connectionString);
             return RedirectToAction("Index", "ChoreTable");
         }
 
         public ActionResult Add(string choreName)
         {
-            int projectId = int.Parse(HttpContext.Session.GetString("CurrentProjectId"));
-            new ChoreService().AddChore(choreName, projectId);
+            int projectId = int.Parse(HttpContext.Session.GetString("CurrentProjectId") ?? "0");
+            _choreService.AddChore(choreName, projectId, _connectionString);
             return RedirectToAction("Index");
         }
 
         public ActionResult ToggleState(int choreId, bool lastState)
         {
-            new ChoreService().ToggleChoreStatus(choreId, lastState);
+            _choreService.ToggleChoreStatus(choreId, lastState, _connectionString);
             return RedirectToAction("Index");
         }
 
         public ActionResult Edit(int choreId)
         {
-            Chore chore = new ChoreService().GetChore(choreId);
+            Chore chore = _choreService.GetChore(choreId, _connectionString);
             return View(chore);
         }
 
@@ -55,12 +58,14 @@ namespace Choreganizer_webapp.Controllers
         [HttpPost]
         public ActionResult Edit(int choreId, string choreName, string choreDescription, DateTime deadlineDate)
         {
-            Chore chore = new Chore();
-            chore.Id = choreId;
-            chore.ChoreName = choreName;
-            chore.Deadline = deadlineDate;
-            
-            new ChoreService().UpdateChore(chore);
+            Chore chore = new Chore()
+            {
+                Id = choreId,
+                ChoreName = choreName,
+                Deadline = deadlineDate
+            };
+
+            _choreService.UpdateChore(chore, _connectionString);
             return RedirectToAction("Index");
         }
 
